@@ -1,5 +1,6 @@
 import { Task } from '../models/task.js';
 import { asyncWrapper } from '../middleware/async.js';
+import { CustomApiError, createCustomError } from '../errors/custom-error.js';
 
 export const getAllTasks =asyncWrapper( async (req, res) => {
     const tasks = await Task.find({});
@@ -11,15 +12,14 @@ export const createTask = asyncWrapper(async (req, res) => {
   res.status(201).json(task);
 });
 
-export const getSingleTask = asyncWrapper (async (req, res) => {
+export const getSingleTask = asyncWrapper (async (req, res, next) => {
   
   const { id: taskID } = req.params;
   const task = await Task.findOne({ _id: taskID });
   if (!task) {
-    res.status(404).json({ mesage: 'No task found' });
+    return next(createCustomError('No task found', 404))
   }
   res.status(200).json(task);
- 
 });
 
 export const updateDateTask = asyncWrapper(async (req, res) => {
@@ -29,7 +29,7 @@ export const updateDateTask = asyncWrapper(async (req, res) => {
       new:true, runValidators: true
   })
   if (!task){
-      res.status(404).json({message: 'not found'})
+    return next(createCustomError('No task found', 404))
   }
   res.status(200).json(task)
 });
@@ -40,7 +40,7 @@ export const deleteTask = asyncWrapper (async (req, res) => {
 
     res.status(200).json({t})
     if (!task) {
-      res.status(404).json({ message: 'not found' });
+      return next(createCustomError('No task found', 404))
     }
     res.status(200).json(task);
 });
@@ -51,7 +51,7 @@ export const editTask = asyncWrapper(async (req, res) => {
       {new:true, runValidators:true, overwrite: true})
     
     if (!task) {
-      res.status(404).json({message: "not task found"})
+      return next(createCustomError('No task found', 404))
     }
     res.status(200).json(task)
-});
+})
