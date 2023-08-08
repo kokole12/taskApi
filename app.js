@@ -1,14 +1,21 @@
 import express from 'express'
 import {router} from './routers/tasks.js'
 import {conectTODB} from './db/connect.js'
+import { notFound } from './middleware/notFound.js'
 import 'dotenv/config'
+import { errorHandler } from './middleware/error-hander.js'
 
-
+//instaances
 const app = express()
 const port = 3001
 
+//middle wares
 app.use(express.json())
+app.use(notFound)
+app.use(errorHandler)
 
+
+//routes
 app.get('/', (req, res) => {
     res.send('hello tasks')
 })

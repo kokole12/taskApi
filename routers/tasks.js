@@ -4,9 +4,10 @@ import {
   createTask,
   getSingleTask,
   deleteTask,
-  updateDateTask
+  updateDateTask,
+  editTask
 } from '../controllers/tasks.js';
 export const router = express.Router();
 
 router.route('/').get(getAllTasks).post(createTask);
-router.route('/:id').get(getSingleTask).delete(deleteTask).patch(updateDateTask);
+router.route('/:id').get(getSingleTask).delete(deleteTask).patch(updateDateTask).put(editTask);
